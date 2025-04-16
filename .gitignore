@@ -47,3 +47,20 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Config 
+**/config.R
+**/Config.R
+**/credentials.R
+**/run_indictators.R
+
+**/*.csv
+**/*.CSV
+**/*.xlsx
+**/*.xls
+**/*.xlsm
+**/*.zip
+**/*.txt
+**/*.tsv
+**/*.docx
+**/*.pdf
