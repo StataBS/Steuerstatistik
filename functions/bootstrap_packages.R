@@ -10,11 +10,12 @@ install_and_load <- function(packages) {
     if (!require(pkg, character.only = TRUE)) {
       cat(sprintf("📦 Installiere fehlendes Paket: %s\n", pkg))
       install.packages(pkg, dependencies = TRUE, quiet = TRUE)
-      library(pkg, character.only = TRUE)
     } else {
       cat(sprintf("✅ Paket bereits installiert: %s\n", pkg))
       
     }
+    library(pkg, character.only = TRUE)
+    cat(sprintf("library(%s)\n", pkg))
   }
 }
 

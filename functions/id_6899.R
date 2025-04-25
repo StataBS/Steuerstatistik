@@ -1,3 +1,16 @@
+
+
+
+
+
+
+      # Noch nicht vollständig. Muss auf Uli warten 
+
+
+        
+
+
+
 # The function id_6899 calculates index values for Basel-Stadt over time
 # with index = 100 for the base year (year - 9).
 #
