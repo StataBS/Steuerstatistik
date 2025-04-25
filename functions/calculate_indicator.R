@@ -42,23 +42,25 @@ process_input_ids <- function(input) {
 
 # Main function to calculate indicators
 calculate_indicator <- function() {
-  
-  # Get command-line arguments
-  args <- commandArgs(trailingOnly = TRUE)
-  
-  # Check if year and indicator IDs are provided
-  if (length(args) < 2) {
-    stop("❌ Fehler: Bitte gib das Jahr und die Indikator-IDs als Argumente ein.")
+
+  if (!exists("input_mode") || input_mode != "interactive") {  
+    # Get command-line arguments
+    args <- commandArgs(trailingOnly = TRUE)
+    
+    # Check if year and indicator IDs are provided
+    if (length(args) < 2) {
+      stop("❌ Fehler: Bitte gib das Jahr und die Indikator-IDs als Argumente ein.")
+    }
+    
+    # Process and validate year input
+    year <- as.numeric(args[1])
+    if (is.na(year) || year < 2000 || year > as.numeric(format(Sys.Date(), "%Y"))) {
+      stop("❌ Fehler: Bitte gib eine gültige Jahreszahl (z.B. 2024) ein.")
+    }
+    
+    # Process and validate indicator IDs
+    ids <- process_input_ids(args[2])
   }
-  
-  # Process and validate year input
-  year <- as.numeric(args[1])
-  if (is.na(year) || year < 2000 || year > as.numeric(format(Sys.Date(), "%Y"))) {
-    stop("❌ Fehler: Bitte gib eine gültige Jahreszahl (z.B. 2024) ein.")
-  }
-  
-  # Process and validate indicator IDs
-  ids <- process_input_ids(args[2])
   
   # Establish database connection
   conn <- db_connection()
