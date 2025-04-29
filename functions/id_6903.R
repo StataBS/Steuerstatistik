@@ -6,6 +6,7 @@
 # will retrieve and process wealth data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6903 <- function(conn, year){
   
@@ -39,9 +40,9 @@ id_6903 <- function(conn, year){
     df_filtered$Vermögen_Steuerbetrag_ktgde <- as.numeric(df_filtered$Vermögen_Steuerbetrag_ktgde)
     
     # Compute values
-    mean_wealth <- round(mean(df_filtered$Reinvermögen, na.rm = TRUE))
-    median_wealth <- round(median(df_filtered$Reinvermögen, na.rm = TRUE))
-    sum_wealth_tax <- round(sum(df_filtered$Vermögen_Steuerbetrag_ktgde, na.rm = TRUE))
+    mean_wealth <- round_maths(mean(df_filtered$Reinvermögen, na.rm = TRUE))
+    median_wealth <- round_maths(median(df_filtered$Reinvermögen, na.rm = TRUE))
+    sum_wealth_tax <- round_maths(sum(df_filtered$Vermögen_Steuerbetrag_ktgde, na.rm = TRUE))
     
     # Store results
     df_result <- rbind(df_result, data.frame(
@@ -67,4 +68,6 @@ id_6903 <- function(conn, year){
   # Save the final DataFrame as a TSV file
   datei_pfad <- paste0(ordner_pfad, "6903.tsv")
   write.table(df_result, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6903 erfolgreich berechnet "))
 }

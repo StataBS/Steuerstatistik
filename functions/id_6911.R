@@ -5,6 +5,7 @@
 # @param year The reference tax year (e.g. 2022). The function will compare it to year - 9.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6911 <- function(conn, year){
   
@@ -33,14 +34,14 @@ id_6911 <- function(conn, year){
   # Calculate total Quellensteuer for year_start
   q_start <- df[df$steuerjahr == year_start, ] %>%
     group_by(wohnviertel_id, wohnviertel_bez) %>%
-    summarise(!!paste0("Quellensteuerertrag ", year_start) := round(sum(steuer_netto, na.rm = TRUE)),
+    summarise(!!paste0("Quellensteuerertrag ", year_start) := round_maths(sum(steuer_netto, na.rm = TRUE)),
               !!paste0("Veranlagungen ", year_start, " (rechte Skala)") := n(),
               .groups = "drop")
   
   # Calculate total Quellensteuer for year_end
   q_end <- df[df$steuerjahr == year_end, ] %>%
     group_by(wohnviertel_id, wohnviertel_bez) %>%
-    summarise(!!paste0("Quellensteuerertrag ", year_end) := round(sum(steuer_netto, na.rm = TRUE)),
+    summarise(!!paste0("Quellensteuerertrag ", year_end) := round_maths(sum(steuer_netto, na.rm = TRUE)),
               !!paste0("Veranlagungen ", year_end, " (rechte Skala)") := n(),
               .groups = "drop")
   
@@ -69,4 +70,6 @@ id_6911 <- function(conn, year){
   
   datei_pfad <- paste0(ordner_pfad, "6911.tsv")
   write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6911 erfolgreich berechnet "))
 }

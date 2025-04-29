@@ -5,6 +5,7 @@
 # @param year The reference tax year (e.g. 2022). The function will compare it to year - 9.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6912 <- function(conn, year){
   
@@ -33,7 +34,7 @@ id_6912 <- function(conn, year){
   df_start <- df[df$steuerjahr == year_start, ] %>%
     group_by(Bezugskategorie) %>%
     summarise(
-      !!paste0("Quellensteuerertrag ", year_start) := round(sum(steuer_netto, na.rm = TRUE)),
+      !!paste0("Quellensteuerertrag ", year_start) := round_maths(sum(steuer_netto, na.rm = TRUE)),
       !!paste0("Veranlagungen ", year_start, " (rechte Skala)") := n(),
       .groups = "drop"
     )
@@ -42,7 +43,7 @@ id_6912 <- function(conn, year){
   df_end <- df[df$steuerjahr == year_end, ] %>%
     group_by(Bezugskategorie) %>%
     summarise(
-      !!paste0("Quellensteuerertrag ", year_end) := round(sum(steuer_netto, na.rm = TRUE)),
+      !!paste0("Quellensteuerertrag ", year_end) := round_maths(sum(steuer_netto, na.rm = TRUE)),
       !!paste0("Veranlagungen ", year_end, " (rechte Skala)") := n(),
       .groups = "drop"
     )
@@ -60,4 +61,6 @@ id_6912 <- function(conn, year){
   
   datei_pfad <- paste0(ordner_pfad, "6912.tsv")
   write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6912 erfolgreich berechnet "))
 }

@@ -5,6 +5,7 @@
 # @param year Represents the tax year for which the function will retrieve and process data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6980 <- function(conn, year){
   
@@ -39,7 +40,7 @@ id_6980 <- function(conn, year){
     group_by(Wohnviertel_ID = wohnviertel_id_kdm,
              Wohnviertel = wohnviertel_name) %>%
     summarise(
-      "Mittelwert Gesamtsteuerertrag" = round(mean(Gesamtsteuerertrag, na.rm = TRUE)),
+      "Mittelwert Gesamtsteuerertrag" = round_maths(mean(Gesamtsteuerertrag, na.rm = TRUE)),
       Gesamtsteuerertrag = sum(Gesamtsteuerertrag, na.rm = TRUE),
       Einkommenssteuer = sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE),
       Vermögenssteuer = sum(Vermögen_Steuerbetrag_ktgde, na.rm = TRUE),
@@ -57,4 +58,6 @@ id_6980 <- function(conn, year){
   # Save result as TSV file
   datei_pfad <- paste0(ordner_pfad, "6980.tsv")
   write.table(df_result, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6980 erfolgreich berechnet "))
 }

@@ -79,4 +79,6 @@ id_6899 <- function(conn, year){
   
   datei_pfad <- paste0(ordner_pfad, "6899.tsv")
   write.table(df_index, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6899 erfolgreich berechnet "))
 }

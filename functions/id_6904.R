@@ -5,6 +5,7 @@
 # @param year Represents the target tax year for which the function will retrieve and process net worth data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6904 <- function(conn, year) {
   
@@ -23,21 +24,21 @@ id_6904 <- function(conn, year) {
   # Filter data for the given year
   df_end <- df[df$Steuerjahr == year, ]
   df_end$Reinvermögen <- as.numeric(df_end$Reinvermögen)  
-  m_end <- round(mean(df_end$Reinvermögen, na.rm = TRUE))
+  m_end <- round_maths(mean(df_end$Reinvermögen, na.rm = TRUE))
   
   # Filter data for (year - 9)
   df_start <- df[df$Steuerjahr == year - 9, ]
   df_start$Reinvermögen <- as.numeric(df_start$Reinvermögen) 
-  m_start <- round(mean(df_start$Reinvermögen, na.rm = TRUE))
+  m_start <- round_maths(mean(df_start$Reinvermögen, na.rm = TRUE))
   
   # Calculate average net worth per residential area for each year
   mean_end <- df_end %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Mittelwert ", year) := round(mean(Reinvermögen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Mittelwert ", year) := round_maths(mean(Reinvermögen, na.rm = TRUE)), .groups = "drop")
   
   mean_start <- df_start %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Mittelwert ", year - 9) := round(mean(Reinvermögen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Mittelwert ", year - 9) := round_maths(mean(Reinvermögen, na.rm = TRUE)), .groups = "drop")
   
   # Merge both years and add Basel-Stadt mean
   df_final <- full_join(mean_start, mean_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%

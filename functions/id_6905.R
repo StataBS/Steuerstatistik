@@ -5,6 +5,7 @@
 # @param year Represents the target tax year for which the function will retrieve and process net worth data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6905 <- function(conn, year) {
   
@@ -23,21 +24,21 @@ id_6905 <- function(conn, year) {
   # Filter data for the given year
   df_end <- df[df$Steuerjahr == year, ]
   df_end$Reinvermögen <- as.numeric(df_end$Reinvermögen)
-  m_end <- round(median(df_end$Reinvermögen, na.rm = TRUE))
+  m_end <- round_maths(median(df_end$Reinvermögen, na.rm = TRUE))
   
   # Filter data for (year - 9)
   df_start <- df[df$Steuerjahr == year - 9, ]
   df_start$Reinvermögen <- as.numeric(df_start$Reinvermögen)
-  m_start <- round(median(df_start$Reinvermögen, na.rm = TRUE))
+  m_start <- round_maths(median(df_start$Reinvermögen, na.rm = TRUE))
   
   # Median net worth per residential area
   median_end <- df_end %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Median ", year) := round(median(Reinvermögen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Median ", year) := round_maths(median(Reinvermögen, na.rm = TRUE)), .groups = "drop")
   
   median_start <- df_start %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Median ", year - 9) := round(median(Reinvermögen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Median ", year - 9) := round_maths(median(Reinvermögen, na.rm = TRUE)), .groups = "drop")
   
   # Merge and add Basel-Stadt medians
   df_final <- full_join(median_start, median_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%

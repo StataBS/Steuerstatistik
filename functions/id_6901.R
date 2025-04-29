@@ -5,6 +5,7 @@
 # @param year Represents the target tax year for which the function will retrieve and process income data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6901 <- function(conn, year){
   
@@ -23,27 +24,27 @@ id_6901 <- function(conn, year){
   # Filter data for the given year
   df_end <- df[df$Steuerjahr == year, ]
   df_end$Reineinkommen <- as.numeric(df_end$Reineinkommen)
-  m_end <- round(mean(df_end$Reineinkommen, na.rm = TRUE))
+  mean_end_bs <- round_maths(mean(df_end$Reineinkommen, na.rm = TRUE))
   
   # Filter data for (year - 9)
   df_start <- df[df$Steuerjahr == year - 9, ]
   df_start$Reineinkommen <- as.numeric(df_start$Reineinkommen)
-  m_start <- round(mean(df_start$Reineinkommen, na.rm = TRUE))
+  mean_start_bs <- round_maths(mean(df_start$Reineinkommen, na.rm = TRUE))
   
   # Average income per residential area
-  mean_end <- df_end %>%
+  mean_end_wohnv <- df_end %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Mittelwert ", year) := round(mean(Reineinkommen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Mittelwert ", year) := round_maths(mean(Reineinkommen, na.rm = TRUE)), .groups = "drop")
   
-  mean_start <- df_start %>%
+  mean_start_wohnv <- df_start %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Mittelwert ", year - 9) := round(mean(Reineinkommen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Mittelwert ", year - 9) := round_maths(mean(Reineinkommen, na.rm = TRUE)), .groups = "drop")
   
   # Merge results and add Basel-Stadt averages
-  df_final <- full_join(mean_start, mean_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
+  df_final <- full_join(mean_start_wohnv, mean_end_wohnv, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
     mutate(
-      !!paste0("Mittelwert Basel-Stadt ", year - 9) := m_start,
-      !!paste0("Mittelwert Basel-Stadt ", year) := m_end
+      !!paste0("Mittelwert Basel-Stadt ", year - 9) := mean_start_bs,
+      !!paste0("Mittelwert Basel-Stadt ", year) := mean_end_bs
     ) %>%
     arrange(wohnviertel_id_kdm) %>%
     select(
@@ -52,15 +53,22 @@ id_6901 <- function(conn, year){
       paste0("Mittelwert Basel-Stadt ", year - 9),
       paste0("Mittelwert ", year),
       paste0("Mittelwert Basel-Stadt ", year)
-    )  # wohnviertel_id_kdm wird hier entfernt
+    ) %>% 
+    mutate(wohnviertel_name = if_else(wohnviertel_name == "Altstadt Grossbasel", "Altstadt GB", wohnviertel_name)) %>% 
+    mutate(wohnviertel_name = if_else(wohnviertel_name == "Altstadt Kleinbasel", "Altstadt KB", wohnviertel_name)) %>% 
+    mutate(wohnviertel_name = if_else(wohnviertel_name == "Kleinhüningen", "Kleinhüning.", wohnviertel_name))
+  
+  names(df_final)[names(df_final) == "wohnviertel_name"] <- ""
   
   # Save result
   jahr <- format(Sys.Date(), "%Y")
   ordner_pfad <- paste0(global_path, jahr, "/")
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
-  }
+  } 
   
   datei_pfad <- paste0(ordner_pfad, "6901.tsv")
   write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  
+  return(cat("6901 erfolgreich berechnet "))
 }
