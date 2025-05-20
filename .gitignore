@@ -66,3 +66,4 @@ rsconnect/
 **/*.tsv
 **/*.docx
 **/*.pdf
+**/*.png
