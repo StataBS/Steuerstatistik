@@ -2,7 +2,8 @@
 # the overall median income for Basel-Stadt.
 # 
 # @param conn A database connection object
-# @param year Represents the target tax year for which the function will retrieve and process income data.
+# @param year Represents the target tax year for which the function will
+#        retrieve and process income data.
 
 source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
@@ -10,10 +11,17 @@ source("functions/round_maths.R")
 id_6902 <- function(conn, year) {
   
   # Define required columns from the database
-  columns <- c("Reineinkommen", "wohnviertel_id_kdm", "wohnviertel_name", "Steuerjahr")
+  columns <- c("Reineinkommen",
+               "wohnviertel_id_kdm",
+               "wohnviertel_name",
+               "Steuerjahr")
   
-  # Fetch data
-  df <- fetch_table_data(conn=conn, schema="sas", table_name="veranlagungen_ab_2005_WUA", columns = columns)
+
+  # Fetch data from the database table
+  df <- fetch_table_data(conn = conn,
+                         schema = "sas",
+                         table_name = "veranlagungen_ab_2005_WUA", 
+                         columns = columns)
   
   # Check if the DataFrame is empty
   if (nrow(df) == 0) {
@@ -33,14 +41,17 @@ id_6902 <- function(conn, year) {
   # Calculate medians per neighborhood
   median_end <- df_end %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Median ", year) := round_maths(median(Reineinkommen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Median ", year) := round_maths(median(Reineinkommen,
+                                                              na.rm = TRUE)), .groups = "drop")
   
   median_start <- df_start %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-    summarise(!!paste0("Median ", year - 9) := round_maths(median(Reineinkommen, na.rm = TRUE)), .groups = "drop")
+    summarise(!!paste0("Median ", year - 9) := round_maths(median(Reineinkommen,
+                                                                  na.rm = TRUE)), .groups = "drop")
   
   # Merge and add Basel-Stadt medians
-  df_final <- full_join(median_start, median_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
+  df_final <- full_join(median_start, median_end, by = c("wohnviertel_id_kdm",
+                                                         "wohnviertel_name")) %>%
     mutate(
       !!paste0("Median Basel-Stadt ", year - 9) := mean_start_bs,
       !!paste0("Median Basel-Stadt ", year) := mean_end_bs
@@ -53,9 +64,27 @@ id_6902 <- function(conn, year) {
       paste0("Median ", year),
       paste0("Median Basel-Stadt ", year)
     ) %>% 
-    mutate(wohnviertel_name = if_else(wohnviertel_name == "Altstadt Grossbasel", "Altstadt GB", wohnviertel_name)) %>% 
-    mutate(wohnviertel_name = if_else(wohnviertel_name == "Altstadt Kleinbasel", "Altstadt KB", wohnviertel_name)) %>% 
-    mutate(wohnviertel_name = if_else(wohnviertel_name == "Kleinhüningen", "Kleinhüning.", wohnviertel_name))
+    mutate(
+      wohnviertel_name = if_else(
+        wohnviertel_name == "Altstadt Grossbasel",
+        "Altstadt GB",
+        wohnviertel_name
+      )
+    ) %>%
+    mutate(
+      wohnviertel_name = if_else(
+        wohnviertel_name == "Altstadt Kleinbasel",
+        "Altstadt KB",
+        wohnviertel_name
+      )
+    ) %>%
+    mutate(
+      wohnviertel_name = if_else(
+        wohnviertel_name == "Kleinhüningen",
+        "Kleinhüning.",
+        wohnviertel_name
+      )
+    )
   
   names(df_final)[names(df_final) == "wohnviertel_name"] <- ""
   
@@ -68,7 +97,8 @@ id_6902 <- function(conn, year) {
   }
   
   datei_pfad <- paste0(ordner_pfad, "6902.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6902 erfolgreich berechnet "))
 }

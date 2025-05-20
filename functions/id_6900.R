@@ -1,5 +1,5 @@
 # The function id_6900 calculates the average and median income 
-# and the total income tax revenue for Basel-Stadt over the last 9 years.
+# and the total income tax revenue for Basel-Stadt over the last 10 years.
 #
 # @param conn A database connection object
 # @param year Represents the target tax year for which the function 
@@ -11,10 +11,14 @@ source("functions/round_maths.R")
 id_6900 <- function(conn, year){
   
   # Define required columns from the database
-  columns <- c("Reineinkommen", "Einkommen_Steuerbetrag_ktgde", "Steuerjahr")
+  columns <- c("Reineinkommen",
+               "Einkommen_Steuerbetrag_ktgde",
+               "Steuerjahr")
   
   # Fetch data from the database table
-  df <- fetch_table_data(conn=conn, schema="sas", table_name="veranlagungen_ab_2005_WUA", 
+  df <- fetch_table_data(conn = conn,
+                         schema = "sas",
+                         table_name = "veranlagungen_ab_2005_WUA", 
                          columns = columns)
   
   # Check if the DataFrame is empty
@@ -41,13 +45,16 @@ id_6900 <- function(conn, year){
     
     df_result <- rbind(df_result, data.frame(
       Jahr = year - i,
-      Mean_Reineinkommen = round_maths(mean(df_filtered$Reineinkommen, na.rm = TRUE)),
+      Mean_Reineinkommen = round_maths(mean(df_filtered$Reineinkommen,na.rm = TRUE)),
       Median_Reineinkommen = round_maths(median(df_filtered$Reineinkommen, na.rm = TRUE)),
       Sum_Einkommen_Steuerbetrag = round_maths(sum(df_filtered$Einkommen_Steuerbetrag_ktgde, na.rm = TRUE))
     ))
   }
   
-  colnames(df_result) <- c("Jahr", "Mittelwert Reineinkommen", "Median Reineinkommen", "Ertrag aus Einkommenssteuer (rechte Skala)")
+  colnames(df_result) <- c("Jahr",
+                           "Mittelwert Reineinkommen",
+                           "Median Reineinkommen",
+                           "Ertrag aus Einkommenssteuer (rechte Skala)")
   
   #  Get the current year for dynamic storage
   jahr <- format(Sys.Date(), "%Y")  # Gets the current year as a string
@@ -60,7 +67,8 @@ id_6900 <- function(conn, year){
   
   #  Save the final DataFrame as a TSV file
   datei_pfad <- paste0(ordner_pfad, "6900.tsv")
-  write.table(df_result, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_result, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6900 erfolgreich berechnet "))
 }
