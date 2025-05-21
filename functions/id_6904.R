@@ -2,7 +2,8 @@
 # the overall average for Basel-Stadt.
 # 
 # @param conn A database connection object
-# @param year Represents the target tax year for which the function will retrieve and process net worth data.
+# @param year Represents the target tax year for which the function will
+#        retrieve and process net worth data.
 
 source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
@@ -10,10 +11,15 @@ source("functions/round_maths.R")
 id_6904 <- function(conn, year) {
   
   # Define required columns from the database
-  columns <- c("Reinvermögen", "wohnviertel_id_kdm", "wohnviertel_name", "Steuerjahr")
+  columns <- c("Reinvermögen",
+               "wohnviertel_id_kdm",
+               "wohnviertel_name",
+               "Steuerjahr")
   
   # Fetch data from the database table
-  df <- fetch_table_data(conn=conn, schema="sas", table_name="veranlagungen_ab_2005_WUA", 
+  df <- fetch_table_data(conn = conn,
+                         schema = "sas",
+                         table_name = "veranlagungen_ab_2005_WUA", 
                          columns = columns)
   
   # Check if the DataFrame is empty
@@ -41,7 +47,8 @@ id_6904 <- function(conn, year) {
     summarise(!!paste0("Mittelwert ", year - 9) := round_maths(mean(Reinvermögen, na.rm = TRUE)), .groups = "drop")
   
   # Merge both years and add Basel-Stadt mean
-  df_final <- full_join(mean_start, mean_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
+  df_final <- full_join(mean_start, mean_end, by = c("wohnviertel_id_kdm",
+                                                     "wohnviertel_name")) %>%
     mutate(
       !!paste0("Mittelwert Basel-Stadt ", year - 9) := m_start,
       !!paste0("Mittelwert Basel-Stadt ", year) := m_end
@@ -63,7 +70,8 @@ id_6904 <- function(conn, year) {
   } 
   
   datei_pfad <- paste0(ordner_pfad, "6904.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6904 erfolgreich berechnet "))
 }

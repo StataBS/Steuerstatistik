@@ -1,8 +1,9 @@
 # The function id_6911 calculates the total withholding tax (Quellensteuer)
-# and the number of tax cases per neighborhood for the selected year and 9 years before.
+# and the number of tax cases per neighborhood for the selected year and 9 years
+# before.
 #
 # @param conn A database connection object
-# @param year The reference tax year (e.g. 2022). The function will compare it to year - 9.
+# @param year The reference tax year (e.g. 2022).
 
 source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
@@ -10,10 +11,15 @@ source("functions/round_maths.R")
 id_6911 <- function(conn, year){
   
   # Define required columns
-  columns <- c("wohnviertel_id", "steuer_netto", "wohnviertel_bez", "steuerjahr")
+  columns <- c("wohnviertel_id",
+               "steuer_netto",
+               "wohnviertel_bez",
+               "steuerjahr")
   
   # Fetch data from the database
-  df <- fetch_table_data(conn=conn, schema="sasqst", table_name="quellensteuer_zeitreihe", 
+  df <- fetch_table_data(conn = conn,
+                         schema = "sasqst",
+                         table_name = "quellensteuer_zeitreihe", 
                          columns = columns)
   
   # Check if the DataFrame is empty
@@ -46,7 +52,8 @@ id_6911 <- function(conn, year){
               .groups = "drop")
   
   # Merge both years by neighborhood
-  df_final <- full_join(q_start, q_end, by = c("wohnviertel_id", "wohnviertel_bez"))
+  df_final <- full_join(q_start, q_end, by = c("wohnviertel_id",
+                                               "wohnviertel_bez"))
   
   # Set column order
   df_final <- df_final %>%
@@ -69,7 +76,8 @@ id_6911 <- function(conn, year){
   }
   
   datei_pfad <- paste0(ordner_pfad, "6911.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6911 erfolgreich berechnet "))
 }

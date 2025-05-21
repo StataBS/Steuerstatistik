@@ -7,7 +7,7 @@ source("functions/bootstrap_packages.R")
 
 
 # Define valid indicator IDs
-valid_indicator_ids <- c(6899, 6900, 6901, 6902,6903 , 6904, 6905, 6906, 6909, 6911, 6912, 6980)
+valid_indicator_ids <- c(6899, 6900, 6901, 6902, 6903, 6904, 6905, 6906, 6909, 6911, 6912, 6980)
 
 # Function to process and validate input indicator IDs
 process_input_ids <- function(input) {

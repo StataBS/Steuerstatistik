@@ -1,8 +1,9 @@
-# The function id_6912 calculates the total withholding tax and number of tax cases
-# grouped by income category (Bezugskategorie) for the selected year and 9 years before.
+# The function id_6912 calculates the total withholding tax and number of tax 
+# cases grouped by income category (Bezugskategorie) for the selected year and 
+# 9 years before.
 #
 # @param conn A database connection object
-# @param year The reference tax year (e.g. 2022). The function will compare it to year - 9.
+# @param year The reference tax year (e.g. 2022).
 
 source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
@@ -10,10 +11,16 @@ source("functions/round_maths.R")
 id_6912 <- function(conn, year){
   
   # Define columns
-  columns <- c("steuerjahr", "steuer_netto", "Bezugskategorie", "anteil_bund")
+  columns <- c("steuerjahr",
+               "steuer_netto",
+               "Bezugskategorie",
+               "anteil_bund")
   
   # Fetch data
-  df <- fetch_table_data(conn = conn, schema = "sasqst", table_name = "quellensteuer_zeitreihe", columns = columns)
+  df <- fetch_table_data(conn = conn,
+                         schema = "sasqst",
+                         table_name = "quellensteuer_zeitreihe",
+                         columns = columns)
   
   # Check if DataFrame is empty
   if (nrow(df) == 0) {
@@ -60,7 +67,8 @@ id_6912 <- function(conn, year){
   }
   
   datei_pfad <- paste0(ordner_pfad, "6912.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6912 erfolgreich berechnet "))
 }

@@ -4,7 +4,7 @@
 #
 # @param conn A database connection object
 # @param year Represents the target tax year for which the function 
-# will retrieve and process tax data.
+#        will retrieve and process tax data.
 
 source("functions/fetch_table_data.R")
 
@@ -18,7 +18,9 @@ id_6906 <- function(conn, year){
                "Steuerjahr")
   
   # Fetch data from the database table
-  df <- fetch_table_data(conn=conn, schema="sas", table_name="veranlagungen_ab_2005_WUA", 
+  df <- fetch_table_data(conn = conn,
+                         schema = "sas",
+                         table_name = "veranlagungen_ab_2005_WUA", 
                          columns = columns)
   
   # Check if the DataFrame is empty
@@ -55,7 +57,8 @@ id_6906 <- function(conn, year){
     )
   
   # Merge by ID and name
-  df_final <- full_join(df_start, df_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
+  df_final <- full_join(df_start, df_end, by = c("wohnviertel_id_kdm",
+                                                 "wohnviertel_name")) %>%
     arrange(wohnviertel_id_kdm) %>%
     select(
       wohnviertel_name, 
@@ -75,7 +78,8 @@ id_6906 <- function(conn, year){
   }
   
   datei_pfad <- paste0(ordner_pfad, "6906.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6906 erfolgreich berechnet "))
 }

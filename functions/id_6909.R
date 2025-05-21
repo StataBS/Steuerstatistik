@@ -4,7 +4,7 @@
 #
 # @param conn A database connection object
 # @param year Represents the target tax year for which the function 
-# will retrieve and process tax data.
+#        will retrieve and process tax data.
 
 source("functions/fetch_table_data.R")
 
@@ -18,7 +18,9 @@ id_6909 <- function(conn, year){
                "Steuerjahr")
   
   # Fetch data from the database table
-  df <- fetch_table_data(conn=conn, schema="sas", table_name="veranlagungen_ab_2005_WUA", 
+  df <- fetch_table_data(conn = conn,
+                         schema = "sas",
+                         table_name="veranlagungen_ab_2005_WUA", 
                          columns = columns)
   
   # Check if the DataFrame is empty
@@ -39,7 +41,9 @@ id_6909 <- function(conn, year){
     df %>%
       filter(Steuerjahr == year) %>%
       group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
-      summarise(!!paste0("Ertrag ", year) := sum(Einkommen_Steuerbetrag_ktgde + Vermögen_Steuerbetrag_ktgde, na.rm = TRUE),
+      summarise(!!paste0("Ertrag ", year) := sum(Einkommen_Steuerbetrag_ktgde +
+                                                   Vermögen_Steuerbetrag_ktgde,
+                                                 na.rm = TRUE),
                 .groups = "drop")
   }
   
@@ -60,7 +64,8 @@ id_6909 <- function(conn, year){
   ertrag_bs_end <- calculate_revenue_bs(df, year_end)
   
   # Füge die Erträge zusammen
-  df_final <- full_join(df_start, df_end, by = c("wohnviertel_id_kdm", "wohnviertel_name")) %>%
+  df_final <- full_join(df_start, df_end, by = c("wohnviertel_id_kdm",
+                                                 "wohnviertel_name")) %>%
     mutate(
       !!paste0("Ertrag Kt. BS ", year_start, " (rechte Skala)") := ertrag_bs_start[[1]],
       !!paste0("Ertrag Kt. BS ", year_end, " (rechte Skala)") := ertrag_bs_end[[1]]
@@ -82,7 +87,8 @@ id_6909 <- function(conn, year){
   }
   
   datei_pfad <- paste0(ordner_pfad, "6909.tsv")
-  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
+  write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE,
+              quote = FALSE)
   
   return(cat("6909 erfolgreich berechnet "))
 }
