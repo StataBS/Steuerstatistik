@@ -21,6 +21,7 @@
 # RStudio files
 .Rproj.user/
 .Rproj
+**/*.Rproj
 
 # produced vignettes
 vignettes/*.html
@@ -54,6 +55,7 @@ rsconnect/
 **/Config.R
 **/credentials.R
 **/run_indictators.bat
+**/run_indicators.bat
 **/webtable.bat
 
 **/*.csv
