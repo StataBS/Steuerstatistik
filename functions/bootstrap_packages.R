@@ -1,18 +1,16 @@
-# Install packages 
+# Install packages
 
 # Function that automatically installs and downloads packages
 install_and_load <- function(packages) {
-  
   # Set the repository for package installation
   options(repos = "https://cloud.r-project.org")
-  
+
   for (pkg in packages) {
     if (!require(pkg, character.only = TRUE)) {
       cat(sprintf("📦 Installiere fehlendes Paket: %s\n", pkg))
       install.packages(pkg, dependencies = TRUE, quiet = TRUE)
     } else {
       cat(sprintf("✅ Paket bereits installiert: %s\n", pkg))
-      
     }
     library(pkg, character.only = TRUE)
     cat(sprintf("library(%s)\n", pkg))

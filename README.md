@@ -38,10 +38,17 @@ Benutze das Skript `run_indicators_interactive.R`:
 # Beispiel:
 year <- 2023
 ids <- c(6901, 6902)
-
-input_mode <- "interactive"
-source("functions/calculate_indicator.R")
 ```
+
+---
+
+> ℹ️ **Wichtig:**  
+> Bitte vor der Nutzung folgende Dateien anpassen:  
+> 
+> - `run_dummy_indicators.bat` → umbenennen zu `run_indicators.bat` und Pfade im Skript anpassen  
+> - `dummy_config.R` → umbenennen zu `config.R` und darin enthaltene Verzeichnispfade korrekt setzen
+
+---
 
 ## 📊 Verfügbare Indikatoren
 
