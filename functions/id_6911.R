@@ -74,6 +74,18 @@ id_6911 <- function(conn, year) {
     ) %>%
     arrange(wohnviertel_id)
 
+  # Remove wohnviertel_id
+  df_final <- df_final %>%
+    select(-wohnviertel_id)
+
+  # Transpose table: columns <-> rows
+  df_transposed <- df_final %>%
+    column_to_rownames(var = "wohnviertel_bez") %>%
+    t() %>%
+    as.data.frame() %>%
+    rownames_to_column(var = " ")
+
+
   # Save result as TSV
   jahr <- format(Sys.Date(), "%Y")
   ordner_pfad <- paste0(global_path, jahr, "/")
@@ -83,7 +95,7 @@ id_6911 <- function(conn, year) {
   }
 
   datei_pfad <- paste0(ordner_pfad, "6911.tsv")
-  write.table(df_final,
+  write.table(df_transposed,
     file = datei_pfad, sep = "\t", row.names = FALSE,
     quote = FALSE
   )
