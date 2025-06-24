@@ -46,7 +46,8 @@ ids <- c(6901, 6902)
 > Bitte vor der Nutzung folgende Dateien anpassen:  
 > 
 > - `run_dummy_indicators.bat` → umbenennen zu `run_indicators.bat` und Pfade im Skript anpassen  
-> - `dummy_config.R` → umbenennen zu `config.R` und darin enthaltene Verzeichnispfade korrekt setzen
+> - `dummy_config.R` → umbenennen zu `config.R` und darin enthaltene Verzeichnispfade korrekt setzen.
+
 > Nicht vergessen, die Proxys in der Umgebungsvariablen zu konfigurieren. 
 
 ---
