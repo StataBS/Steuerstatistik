@@ -9,6 +9,7 @@ source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
 
 id_6903 <- function(conn, year) {
+  
   # Define required columns from the database
   columns <- c(
     "Reinvermögen",

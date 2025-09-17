@@ -1,6 +1,9 @@
 # Install packages
-
 # Function that automatically installs and downloads packages
+
+cat("🔍 Starte bootstrap_packages.R\n")
+
+
 install_and_load <- function(packages) {
   # Set the repository for package installation
   options(repos = "https://cloud.r-project.org")
@@ -19,14 +22,10 @@ install_and_load <- function(packages) {
 
 # List of required packages
 required_packages <- c(
+  "tidyverse",  
+  "later",
   "DBI",
-  "httr",
-  "data.table",
-  "dplyr",
-  "odbc",
-  "stringr",
-  "tidyr",
-  "readr"
+  "odbc"
 )
 
 # Install and download all required packages

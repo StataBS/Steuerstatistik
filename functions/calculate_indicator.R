@@ -7,7 +7,7 @@ source("functions/bootstrap_packages.R")
 
 
 # Define valid indicator IDs
-valid_indicator_ids <- c(6899, 6900, 6901, 6902, 6903, 6904, 6905, 6906, 6909, 6911, 6912, 6980, 6981, 6982)
+valid_indicator_ids <- c(6897, 6899, 6901, 6902, 6904, 6905, 6906, 6907, 6908, 6909, 6911, 6912, 6980, 6981, 6982, 6983)
 
 # Function to process and validate input indicator IDs
 process_input_ids <- function(input) {
@@ -67,8 +67,8 @@ calculate_indicator <- function() {
   conn <- db_connection()
 
   # Calculate each selected indicator
-
-  for (id in as.character(ids)) {
+  id_chars <- as.character(ids)
+  for (id in id_chars) {
     file_path <- paste0("functions/id_", id, ".R")
     cat(sprintf("\n🔄 Berechne ID %s...\n", id))
 

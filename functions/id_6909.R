@@ -7,6 +7,7 @@
 #        will retrieve and process tax data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6909 <- function(conn, year) {
   # Define required columns from the database
@@ -45,11 +46,11 @@ id_6909 <- function(conn, year) {
       filter(Steuerjahr == year) %>%
       group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
       summarise(
-        !!paste0("Ertrag ", year) := sum(
+        !!paste0("Ertrag ", year) := round_maths(sum(
           Einkommen_Steuerbetrag_ktgde +
             Vermögen_Steuerbetrag_ktgde,
           na.rm = TRUE
-        ),
+        )),
         .groups = "drop"
       )
   }
@@ -63,7 +64,7 @@ id_6909 <- function(conn, year) {
     df %>%
       filter(Steuerjahr == year) %>%
       summarise(!!paste0("Ertrag Basel-Stadt ", year, " (rechte Skala)") :=
-        sum(Einkommen_Steuerbetrag_ktgde + Vermögen_Steuerbetrag_ktgde, na.rm = TRUE))
+        round_maths(sum(Einkommen_Steuerbetrag_ktgde + Vermögen_Steuerbetrag_ktgde, na.rm = TRUE)))
   }
 
   # Gesamtertrag für Basel-Stadt

@@ -6,6 +6,7 @@
 # param year The target year (e.g. 2020). The function processes 10 years: year - 9 to year.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6981 <- function(conn, year) {
   # Define required columns
@@ -36,9 +37,9 @@ id_6981 <- function(conn, year) {
   df_final <- df_filtered %>%
     group_by(Steuerjahr) %>%
     summarise(
-      "Ertrag Grundstücksteuern" = round(sum(grundstück_steuerbetrag_gesamt, na.rm = TRUE)),
-      "Ertrag Kapitalsteuern" = round(sum(kapital_steuerbetrag_gesamt, na.rm = TRUE)),
-      "Ertrag Gewinnsteuern" = round(sum(gewinn_steuerbetrag_gesamt, na.rm = TRUE)),
+      "Ertrag Grundstücksteuern" = round_maths(sum(grundstück_steuerbetrag_gesamt, na.rm = TRUE)),
+      "Ertrag Kapitalsteuern" = round_maths(sum(kapital_steuerbetrag_gesamt, na.rm = TRUE)),
+      "Ertrag Gewinnsteuern" = round_maths(sum(gewinn_steuerbetrag_gesamt, na.rm = TRUE)),
       "Veranlagungen (rechte Skala)" = n(),
       .groups = "drop"
     ) %>%

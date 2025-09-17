@@ -7,6 +7,7 @@
 #        will retrieve and process tax data.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6906 <- function(conn, year) {
   # Define required columns from the database
@@ -43,8 +44,8 @@ id_6906 <- function(conn, year) {
   df_start <- df[df$Steuerjahr == year_start, ] %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
     summarise(
-      !!paste0("Einkommenssteuer ", year_start) := sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE),
-      !!paste0("Vermögenssteuer ", year_start) := sum(Vermögen_Steuerbetrag_ktgde, na.rm = TRUE),
+      !!paste0("Einkommenssteuer ", year_start) := round_maths(sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE)),
+      !!paste0("Vermögenssteuer ", year_start) := round_maths(sum(Vermögen_Steuerbetrag_ktgde, na.rm = TRUE)),
       !!paste0("Anzahl Veranlagungen ", year_start, " (rechte Skala)") := n(),
       .groups = "drop"
     )
@@ -53,7 +54,7 @@ id_6906 <- function(conn, year) {
   df_end <- df[df$Steuerjahr == year_end, ] %>%
     group_by(wohnviertel_id_kdm, wohnviertel_name) %>%
     summarise(
-      !!paste0("Einkommenssteuer ", year_end) := sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE),
+      !!paste0("Einkommenssteuer ", year_end) := round_maths(sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE)),
       !!paste0("Vermögenssteuer ", year_end) := sum(Vermögen_Steuerbetrag_ktgde, na.rm = TRUE),
       !!paste0("Anzahl Veranlagungen ", year_end, " (rechte Skala)") := n(),
       .groups = "drop"

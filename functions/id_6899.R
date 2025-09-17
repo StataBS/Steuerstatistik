@@ -12,6 +12,7 @@
 # @param year The selected target year (e.g. 2021). Index starts at year - 9.
 
 source("functions/fetch_table_data.R")
+source("functions/round_maths.R")
 
 id_6899 <- function(conn, year) {
   # Define required columns
@@ -22,7 +23,7 @@ id_6899 <- function(conn, year) {
 
   # Fetch data
   df <- fetch_table_data(
-    conn = conn, schema = "sas", table_name = "veranlagungen_ab_2005_WUA",
+    conn = conn, view = "sas", table_name = "veranlagungen_ab_2005_WUA",
     columns = columns
   )
 
@@ -62,7 +63,7 @@ id_6899 <- function(conn, year) {
   base_values <- df_summary[df_summary$Steuerjahr == start_year, -1]
 
   df_index <- df_summary %>%
-    mutate(across(-Steuerjahr, ~ round(.x / base_values[[cur_column()]] * 100, 1)))
+    mutate(across(-Steuerjahr, ~ round_maths(.x / base_values[[cur_column()]] * 100, 1)))
 
   # Rename Steuerjahr to row index
   colnames(df_index)[1] <- "Jahr"

@@ -44,7 +44,7 @@ id_6912 <- function(conn, year) {
     group_by(Bezugskategorie) %>%
     summarise(
       !!paste0("Quellensteuerertrag ", year_start) := round_maths(sum(steuer_netto, na.rm = TRUE)),
-      !!paste0("Veranlagungen ", year_start, " (rechte Skala)") := n(),
+      !!paste0("Anzahl Veranlagungen ", year_start, " (rechte Skala)") := n(),
       .groups = "drop"
     )
 
@@ -53,20 +53,45 @@ id_6912 <- function(conn, year) {
     group_by(Bezugskategorie) %>%
     summarise(
       !!paste0("Quellensteuerertrag ", year_end) := round_maths(sum(steuer_netto, na.rm = TRUE)),
-      !!paste0("Veranlagungen ", year_end, " (rechte Skala)") := n(),
+      !!paste0("Anzahl Veranlagungen ", year_end, " (rechte Skala)") := n(),
       .groups = "drop"
     )
 
   # Join beide Jahre
   df_final <- full_join(df_start, df_end, by = "Bezugskategorie") %>%
     arrange(Bezugskategorie)
-  
+
   # Transpose table: columns <-> rows
   df_transposed <- df_final %>%
     column_to_rownames(var = "Bezugskategorie") %>%
     t() %>%
     as.data.frame() %>%
     rownames_to_column(var = " ")
+
+  # Spaltennamen anpassen
+ colnames(df_transposed) <- gsub("Bezüger von Kapitalleistungen", "Kapitalleistungen", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Erwerbseinkommen", "Erwerb", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Versicherungsleistungen", "Versicherung", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Künstler, Sportler, Referenten", "Künstler, Sport", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Verwaltungsräte & Mitarbeiterbeteiligungen", "Verwaltungsräte", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Rentenbezüger", "Renten", colnames(df_transposed))
+ colnames(df_transposed) <- gsub("Grenzgänger", "Grenzgänger Deutschland u.a.", colnames(df_transposed))
+
+  # Spaltenreihenfolge definieren (optional, passend zur Vorlage)
+  spalten_reihenfolge <- c(
+    " ", "Erwerb", "Versicherung", "Grenzgänger Deutschland u.a.",
+    "Künstler, Sport", "Verwaltungsräte", "Renten", "Kapitalleistungen"
+  )
+  df_transposed <- df_transposed[, spalten_reihenfolge]
+
+  # Zeilenreihenfolge anpassen
+  zeilen_reihenfolge <- c(
+    paste0("Quellensteuerertrag ", year_start),
+    paste0("Quellensteuerertrag ", year_end),
+    paste0("Anzahl Veranlagungen ", year_start, " (rechte Skala)"),
+    paste0("Anzahl Veranlagungen ", year_end, " (rechte Skala)")
+  )
+  df_transposed <- df_transposed[match(zeilen_reihenfolge, df_transposed$` `), ]
 
   # Save result
   jahr <- format(Sys.Date(), "%Y")
