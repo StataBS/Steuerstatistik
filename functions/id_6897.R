@@ -26,7 +26,7 @@ id_6897 <- function(conn, year) {
   columns_qst <- c("steuerjahr", "steuer_netto")
   df_qst <- fetch_table_data(conn, view = "sasqst", table_name = "quellensteuer_zeitreihe", columns = columns_qst)
   df_qst$steuer_netto <- as.numeric(df_qst$steuer_netto)
-  df_qst_grouped <- df_qst[df_qst$steuerjahr >= year - 9 & df_qst$steuerjahr <= year, ] %>%
+  df_qst_grouped <- df_qst[df_qst$steuerjahr >= year - 9 & df_qst$steuerjahr <= year+1, ] %>%
     group_by(steuerjahr) %>%
     summarise(Quellensteuer = round_maths(sum(steuer_netto, na.rm = TRUE)), .groups = "drop")
   
@@ -47,6 +47,8 @@ id_6897 <- function(conn, year) {
   df_final <- full_join(df_sas_grouped, df_qst_grouped, by = "steuerjahr") %>%
     full_join(df_jurp_grouped, by = "steuerjahr") %>%
     arrange(steuerjahr)
+  
+  colnames(df_final)[colnames(df_final) == "steuerjahr"] <- ""
   
   # ---------- Save ----------
   jahr <- format(Sys.Date(), "%Y")
