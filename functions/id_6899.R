@@ -1,9 +1,3 @@
-# Noch nicht vollständig. Muss auf Uli warten
-
-
-
-
-
 
 # The function id_6899 calculates index values for Basel-Stadt over time
 # with index = 100 for the base year (year - 9).
@@ -49,7 +43,6 @@ id_6899 <- function(conn, year) {
   df_summary <- df %>%
     group_by(Steuerjahr) %>%
     summarise(
-      Veranlagungen = n(),
       Reineinkommen = sum(Reineinkommen, na.rm = TRUE),
       Reinvermögen = sum(Reinvermögen, na.rm = TRUE),
       Einkommenssteuer = sum(Einkommen_Steuerbetrag_ktgde, na.rm = TRUE),
@@ -57,7 +50,7 @@ id_6899 <- function(conn, year) {
       .groups = "drop"
     ) %>%
     mutate(`Einkommens- und Vermögenssteuerertrag` = Einkommenssteuer + Vermögenssteuer) %>%
-    select(Steuerjahr, Veranlagungen, Reineinkommen, Reinvermögen, `Einkommens- und Vermögenssteuerertrag`)
+    select(Steuerjahr, Reineinkommen, Reinvermögen, `Einkommens- und Vermögenssteuerertrag`)
 
   # Index calculation: divide by base year values and multiply by 100
   base_values <- df_summary[df_summary$Steuerjahr == start_year, -1]

@@ -40,7 +40,6 @@ id_6981 <- function(conn, year) {
       "Ertrag Grundstücksteuern" = round_maths(sum(grundstück_steuerbetrag_gesamt, na.rm = TRUE)),
       "Ertrag Kapitalsteuern" = round_maths(sum(kapital_steuerbetrag_gesamt, na.rm = TRUE)),
       "Ertrag Gewinnsteuern" = round_maths(sum(gewinn_steuerbetrag_gesamt, na.rm = TRUE)),
-      "Veranlagungen (rechte Skala)" = n(),
       .groups = "drop"
     ) %>%
     arrange(Steuerjahr) %>%
