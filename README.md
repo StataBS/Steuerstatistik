@@ -46,7 +46,7 @@ ids <- c(6901, 6902)
 > 1. **Pfad zu `Rscript.exe` ermitteln**  
 >    Öffne die Eingabeaufforderung (CMD) oder PowerShell und führe folgenden Befehl aus:
 >    ```
->    where Rscript.exe
+>    where /R C:\ Rscript.exe
 >    ```
 >    Der angezeigte Pfad wird später im Batch-Skript benötigt.
 >
