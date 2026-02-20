@@ -69,11 +69,10 @@ id_6983 <- function(conn, year) {
 
   # Speichern
   jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- paste0(global_path, jahr, "/")
+  ordner_pfad <- file.path(global_path, jahr)
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }
-
-  datei_pfad <- paste0(ordner_pfad, "6983.tsv")
+  datei_pfad <- file.path(ordner_pfad, "6983.tsv")
   write.table(df_final, file = datei_pfad, sep = "\t", row.names = FALSE, quote = FALSE)
 }

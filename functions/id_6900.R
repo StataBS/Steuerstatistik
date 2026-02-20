@@ -65,14 +65,11 @@ id_6900 <- function(conn, year) {
   #  Get the current year for dynamic storage
   jahr <- format(Sys.Date(), "%Y") # Gets the current year as a string
 
-  #  Create the storage directory if it does not exist
-  ordner_pfad <- paste0(global_path, jahr, "/") # Path for the year
+  ordner_pfad <- file.path(global_path, jahr)
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }
-
-  #  Save the final DataFrame as a TSV file
-  datei_pfad <- paste0(ordner_pfad, "6900.tsv")
+  datei_pfad <- file.path(ordner_pfad, "6900.tsv")
   write.table(df_result,
     file = datei_pfad, sep = "\t", row.names = FALSE,
     quote = FALSE
