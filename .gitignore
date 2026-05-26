@@ -22,6 +22,7 @@
 .Rproj.user/
 .Rproj
 **/*.Rproj
+**/*.vscode
 
 # produced vignettes
 vignettes/*.html
@@ -54,9 +55,6 @@ rsconnect/
 **/config.R
 **/Config.R
 **/credentials.R
-**/run_indictators.bat
-**/run_indicators.bat
-**/webtable.bat
 
 **/*.csv
 **/*.CSV
