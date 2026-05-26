@@ -1,0 +1,15 @@
+# Define all global variables
+
+# Default: output folder in the project directory
+default_global_path <- file.path(normalizePath("."), "output")
+
+# User can override the path hier (simply enter the path)
+global_path <- default_global_path
+# global_path <- "D:/Mein/Anderer/Output/Ordner"
+
+Server = "server"
+Database = "database"
+
+
+
+

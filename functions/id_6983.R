@@ -18,7 +18,7 @@ id_6983 <- function(conn, year) {
   )
 
   # Fetch data
-  df <- fetch_table_data(conn = conn, view = "JurP", table_name = "vVeranlagung", columns = columns)
+  df <- fetch_table_data(conn = conn, schema = "JurP", table_name = "vVeranlagung", columns = columns)
 
   # Check for empty
   if (nrow(df) == 0) {
@@ -68,8 +68,11 @@ id_6983 <- function(conn, year) {
     arrange(factor(Klassen, levels = labels)) # Reihenfolge sichern
 
   # Speichern
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }

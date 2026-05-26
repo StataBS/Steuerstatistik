@@ -20,7 +20,7 @@ id_6911 <- function(conn, year) {
   # Fetch data from the database
   df <- fetch_table_data(
     conn = conn,
-    view = "sasqst",
+    schema = "sasqst",
     table_name = "quellensteuer_zeitreihe",
     columns = columns
   )
@@ -87,8 +87,11 @@ id_6911 <- function(conn, year) {
 
 
   # Save result as TSV
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }

@@ -1,32 +1,44 @@
-# Install packages
-# Function that automatically installs and downloads packages
-
 cat("🔍 Starte bootstrap_packages.R\n")
 
-
 install_and_load <- function(packages) {
-  # Set the repository for package installation
-  options(repos = "https://cloud.r-project.org")
+
+  options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+  if (.Platform$OS.type == "windows") {
+    options(download.file.method = "wininet")
+  }
 
   for (pkg in packages) {
-    if (!require(pkg, character.only = TRUE)) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
       cat(sprintf("📦 Installiere fehlendes Paket: %s\n", pkg))
-      install.packages(pkg, dependencies = TRUE, quiet = TRUE)
+      ok <- tryCatch(
+        {
+          install.packages(
+            pkg,
+            dependencies = TRUE,
+            quiet = TRUE,
+            type = if (.Platform$OS.type == "windows") "binary" else "source"
+          )
+          TRUE
+        },
+        error = function(e) {
+          cat(sprintf("❌ Installation fehlgeschlagen (%s): %s\n", pkg, conditionMessage(e)))
+          FALSE
+        }
+      )
+
+      # Wenn Installation fehlgeschlagen: nicht sofort library() versuchen
+      if (!ok || !requireNamespace(pkg, quietly = TRUE)) {
+        stop(sprintf("Paket konnte nicht installiert werden und ist nicht verfügbar: %s", pkg))
+      }
     } else {
       cat(sprintf("✅ Paket bereits installiert: %s\n", pkg))
     }
-    library(pkg, character.only = TRUE)
+
+    suppressPackageStartupMessages(library(pkg, character.only = TRUE))
     cat(sprintf("library(%s)\n", pkg))
   }
 }
 
-# List of required packages
-required_packages <- c(
-  "tidyverse",  
-  "later",
-  "DBI",
-  "odbc"
-)
-
-# Install and download all required packages
+required_packages <- c("tidyverse", "later", "DBI", "odbc", "openxlsx")
 install_and_load(required_packages)

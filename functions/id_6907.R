@@ -8,25 +8,24 @@ source("functions/fetch_table_data.R")
 source("functions/round_maths.R")
 
 id_6907 <- function(conn, year) {
-  
   # Define columns
   columns <- c("steuerjahr", "Einkommen_steuerbar", "Einkommen_Steuerbetrag_ktgde")
-  
+
   # Fetch from DB
-  df <- fetch_table_data(conn, view = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns)
-  
+  df <- fetch_table_data(conn, schema = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns)
+
   # Check empty
   if (nrow(df) == 0) {
     stop("Error: The DataFrame is empty!")
   }
-  
+
   # Filter year
   df <- df[df$steuerjahr == year, ]
-  
+
   # Convert
   df$Einkommen_steuerbar <- as.numeric(df$Einkommen_steuerbar)
   df$Einkommen_Steuerbetrag_ktgde <- as.numeric(df$Einkommen_Steuerbetrag_ktgde)
-  
+
   # Klassierung
   breaks <- c(0, 1, 25000, 50000, 75000, 100000, 200000, Inf)
   labels <- c(
@@ -39,7 +38,7 @@ id_6907 <- function(conn, year) {
     "200 000 und mehr"
   )
   df$Klasse <- cut(df$Einkommen_steuerbar, breaks = breaks, labels = labels, right = FALSE, include.lowest = TRUE)
-  
+
   # Aggregation
   df_final <- df %>%
     group_by(Klassen = Klasse) %>%
@@ -49,10 +48,13 @@ id_6907 <- function(conn, year) {
       .groups = "drop"
     ) %>%
     arrange(factor(Klassen, levels = labels))
-  
+
   # Save
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }

@@ -65,6 +65,7 @@ ids <- process_input_ids(args[2])
 calculate_indicator <- function() {
   # Establish database connection
   conn <- db_connection()
+  on.exit(close_connection(conn), add = TRUE)
 
   # Calculate each selected indicator
   id_chars <- as.character(ids)
@@ -93,10 +94,6 @@ calculate_indicator <- function() {
     }
   }
 
-
-  # Close the database connection
-  close_connection(conn)
-  cat("✅ Der Prozess ist abgeschlossen.\n")
 }
 
 calculate_indicator()

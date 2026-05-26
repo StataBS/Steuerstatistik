@@ -13,7 +13,7 @@ id_6908 <- function(conn, year) {
   columns <- c("steuerjahr", "Vermögen_steuerbar", "Vermögen_Steuerbetrag_ktgde")
   
   # Fetch data from DB
-  df <- fetch_table_data(conn, view = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns)
+  df <- fetch_table_data(conn, schema = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns)
   
   # Check for empty result
   if (nrow(df) == 0) {
@@ -50,8 +50,11 @@ id_6908 <- function(conn, year) {
     arrange(factor(Klassen, levels = labels))
   
   # Save result
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }

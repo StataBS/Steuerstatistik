@@ -1,4 +1,4 @@
-# The function id_6897 calculates tax revenues from multiple sources across different views
+# The function id_6897 calculates tax revenues from multiple sources across different schemas
 # and combines them into a single yearly summary table.
 #
 # param conn A database connection object
@@ -9,9 +9,9 @@ source("functions/round_maths.R")
 
 id_6897 <- function(conn, year) {
   
-  # ---------- view: sas ----------
+  # ---------- schema: sas ----------
   columns_sas <- c("steuerjahr", "Einkommen_Steuerbetrag_ktgde", "Vermögen_Steuerbetrag_ktgde")
-  df_sas <- fetch_table_data(conn, view = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns_sas)
+  df_sas <- fetch_table_data(conn, schema = "sas", table_name = "veranlagungen_ab_2005_wua", columns = columns_sas)
   df_sas$Einkommen_Steuerbetrag_ktgde <- as.numeric(df_sas$Einkommen_Steuerbetrag_ktgde)
   df_sas$Vermögen_Steuerbetrag_ktgde  <- as.numeric(df_sas$Vermögen_Steuerbetrag_ktgde)
   df_sas_grouped <- df_sas[df_sas$steuerjahr >= year - 9 & df_sas$steuerjahr <= year, ] %>%
@@ -22,17 +22,17 @@ id_6897 <- function(conn, year) {
       .groups = "drop"
     )
   
-  # ---------- view: sasqst ----------
+  # ---------- schema: sasqst ----------
   columns_qst <- c("steuerjahr", "steuer_netto")
-  df_qst <- fetch_table_data(conn, view = "sasqst", table_name = "quellensteuer_zeitreihe", columns = columns_qst)
+  df_qst <- fetch_table_data(conn, schema = "sasqst", table_name = "quellensteuer_zeitreihe", columns = columns_qst)
   df_qst$steuer_netto <- as.numeric(df_qst$steuer_netto)
   df_qst_grouped <- df_qst[df_qst$steuerjahr >= year - 9 & df_qst$steuerjahr <= year+1, ] %>%
     group_by(steuerjahr) %>%
     summarise(Quellensteuer = round_maths(sum(steuer_netto, na.rm = TRUE)), .groups = "drop")
   
-  # ---------- view: JurP ----------
+  # ---------- schema: JurP ----------
   columns_jurp <- c("steuerjahr", "gewinn_steuerbetrag_gesamt", "kapital_steuerbetrag_gesamt")
-  df_jurp <- fetch_table_data(conn, view = "JurP", table_name = "vVeranlagung", columns = columns_jurp)
+  df_jurp <- fetch_table_data(conn, schema = "JurP", table_name = "vVeranlagung", columns = columns_jurp)
   df_jurp$gewinn_steuerbetrag_gesamt  <- as.numeric(df_jurp$gewinn_steuerbetrag_gesamt)
   df_jurp$kapital_steuerbetrag_gesamt <- as.numeric(df_jurp$kapital_steuerbetrag_gesamt)
   df_jurp_grouped <- df_jurp[df_jurp$steuerjahr >= year - 9 & df_jurp$steuerjahr <= year, ] %>%
@@ -51,8 +51,11 @@ id_6897 <- function(conn, year) {
   colnames(df_final)[colnames(df_final) == "steuerjahr"] <- ""
   
   # ---------- Save ----------
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }

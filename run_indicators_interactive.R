@@ -5,14 +5,14 @@ source("functions/close_connection.R")
 source("functions/bootstrap_packages.R")
 
 # Please enter the year (e.g. 2023)
-year <- 2021 
+year <- 2021
 
 # Enter the indicator IDs (e.g. 6901,6902,6904)
 id <- 6980
 
 # Establish database connection
 conn <- db_connection()
-
+on.exit(close_connection(conn), add = TRUE)
 fun_name <- paste0("id_", id)
 
 file_path <- paste0("functions/", fun_name, ".R")
@@ -25,6 +25,3 @@ if (exists(fun_name)) {
 } else {
   cat(sprintf("❌ Funktion '%s' nicht gefunden.\n", fun_name))
 }
-
-# Close the database connection
-close_connection(conn)

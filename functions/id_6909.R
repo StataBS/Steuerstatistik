@@ -22,7 +22,7 @@ id_6909 <- function(conn, year) {
   # Fetch data from the database table
   df <- fetch_table_data(
     conn = conn,
-    view = "sas",
+    schema = "sas",
     table_name = "veranlagungen_ab_2005_WUA",
     columns = columns
   )
@@ -98,10 +98,13 @@ id_6909 <- function(conn, year) {
     )
 
   names(df_final)[names(df_final) == "wohnviertel_name"] <- ""
-  
+
   # Save result
-  jahr <- format(Sys.Date(), "%Y")
-  ordner_pfad <- file.path(global_path, jahr)
+  current_year <- format(Sys.Date(), "%Y")
+  current_month <- format(Sys.Date(), "%m")
+  
+  ordner_pfad <- file.path(global_path, current_year, current_month)
+  
   if (!dir.exists(ordner_pfad)) {
     dir.create(ordner_pfad, recursive = TRUE)
   }
