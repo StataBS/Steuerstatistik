@@ -1,8 +1,9 @@
 # Load necessary functions
+
+source("functions/bootstrap_packages.R")
 source("functions/config.R")
 source("functions/db_connection.R")
 source("functions/close_connection.R")
-source("functions/bootstrap_packages.R")
 
 
 

@@ -40,5 +40,5 @@ install_and_load <- function(packages) {
   }
 }
 
-required_packages <- c("tidyverse", "later", "DBI", "odbc", "openxlsx")
+required_packages <- c("tidyverse", "later", "DBI", "odbc", "openxlsx","RSQLite")
 install_and_load(required_packages)
