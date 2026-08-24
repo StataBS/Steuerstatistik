@@ -66,3 +66,6 @@ rsconnect/
 **/*.docx
 **/*.pdf
 **/*.png
+
+# Ausnahme für eine bestimmte Datei:
+!config.txt

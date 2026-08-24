@@ -254,6 +254,14 @@ Dadurch können:
 - Entwickler das Projekt lokal ausführen
 - externe Nutzer den gesamten Workflow nachvollziehen
 
+### Umfang der Beispieldaten
+
+Die bereitgestellten SQLite-Datenbanken enthalten vollständig synthetische Daten für die Steuerjahre **2013 bis 2024**.
+
+Damit stehen insgesamt **12 Steuerjahre** für Tests zur Verfügung. Dies ermöglicht insbesondere auch das Testen von Indikatoren mit mehrjährigen Zeitreihen und 10-Jahres-Vergleichen.
+
+> Die enthaltenen Werte sind vollständig fiktiv und dienen ausschliesslich zu Demonstrations-, Test- und Entwicklungszwecken.
+
 ### Anpassung von `config.R`
 
 Für die Nutzung der SQLite-Beispieldatenbanken kann `functions/config.R` beispielsweise wie folgt konfiguriert werden:
@@ -271,40 +279,7 @@ sqlite_sasqst <- "data/sasqst.sqlite"
 sqlite_jurp <- "data/JurP.sqlite"
 ```
 
-### Anpassung von `db_connection.R`
 
-Die Datenbankverbindung kann anschliessend über SQLite erfolgen:
-
-```r
-db_connection <- function() {
-
-  if (db_mode == "sqlite") {
-
-    conn <- DBI::dbConnect(
-      RSQLite::SQLite(),
-      ":memory:"
-    )
-
-    DBI::dbExecute(
-      conn,
-      sprintf("ATTACH DATABASE '%s' AS sas", sqlite_sas)
-    )
-
-    DBI::dbExecute(
-      conn,
-      sprintf("ATTACH DATABASE '%s' AS sasqst", sqlite_sasqst)
-    )
-
-    DBI::dbExecute(
-      conn,
-      sprintf("ATTACH DATABASE '%s' AS JurP", sqlite_jurp)
-    )
-
-    return(conn)
-  }
-
-}
-```
 
 > Die produktive SQL-Server-Umgebung bleibt dadurch unverändert.  
-> Für Open-Source-Nutzung müssen ausschliesslich `config.R` und `db_connection.R` angepasst werden.
+> Für Open-Source-Nutzung müssen ausschliesslich `config.R` angepasst werden.
