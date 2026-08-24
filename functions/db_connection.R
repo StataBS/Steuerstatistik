@@ -13,7 +13,8 @@
 
 db_connection <- function() {
 
-  if (db_mode == "sqlite") {
+  if (exists("db_mode", inherits = TRUE) &&
+      identical(db_mode, "sqlite")){
 
     conn <- DBI::dbConnect(
       RSQLite::SQLite(),
@@ -52,10 +53,11 @@ db_connection <- function() {
 
   conn <- DBI::dbConnect(
     odbc::odbc(),
-    Driver = driver,
-    Server = server,
-    Database = database,
-    Trusted_Connection = "Yes"
+    Driver = "ODBC Driver 18 for SQL Server",
+    Server = Server,
+    Database = Database,
+    Trusted_Connection = "Yes",
+    TrustServerCertificate = "Yes"
   )
 
   message("Produktive Datenbank verbunden.")
